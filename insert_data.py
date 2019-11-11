@@ -3,13 +3,14 @@ import time
 
 # es 相关操作
 class ES(object):
-    def __init__(self, data):
+    def __init__(self, data, index_name):
         """
         实例化 es 对象
         :param data: 字典类型
         """
         self.es = elasticsearch.Elasticsearch(hosts="your hosts", http_auth=("account", "password"))
         self.data = data
+        self.index = index_name
 
     def buildmapping(self):
         """
@@ -47,7 +48,7 @@ class ES(object):
         }
 
         # 创建索引
-        R = self.es.indices.create(index='your index name', body=mapping)
+        R = self.es.indices.create(index=self.index, body=mapping)
         print(R)
 
     def insertdata(self):
@@ -57,7 +58,7 @@ class ES(object):
         :return: 无法返回结果
         """
         id = str(time.time())
-        self.es.create(index='your index name', body=self.data, id=id)
+        self.es.create(index=self.index, body=self.data, id=id)
 
     def router(self):
         """
@@ -67,7 +68,7 @@ class ES(object):
         :return: 无返回
         """
         try:
-            response = self.es.search(index='your index name')
+            response = self.es.search(index=self.index)
             if response:
                 print("此索引已经存在，开始存储数据...")
                 try:
